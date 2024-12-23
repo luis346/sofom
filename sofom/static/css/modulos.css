@@ -1,0 +1,18 @@
+.card{
+    background-color: rgba(255, 255, 255, 0.1); /* Fondo blanco con 80% de opacidad */
+    padding: 20px;
+}
+
+.btn-text-right {
+    text-align: right;
+}
+
+.modal {
+    z-index: 1050; /* Asegúrate de que el modal esté por encima del backdrop */
+}
+
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semi-transparente */
+    z-index: 1040; /* El backdrop está justo debajo del modal */
+}
+

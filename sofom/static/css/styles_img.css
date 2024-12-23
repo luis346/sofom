@@ -1,0 +1,29 @@
+/* CSS para el logo como marca de agua */
+.watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1; /* Para que esté detrás del contenido */
+    opacity: 0.8; /* Ajusta la transparencia */
+}
+
+.watermark img {
+    width: 500px; /* Ajusta el tamaño del logo */
+    height: auto;
+}
+
+/* El contenido debe estar por encima del logo */
+.content {
+    position: relative;
+    z-index: 1;
+}
+
+.rechazado {
+    background-color: #ff4d4d;  /* Rojo intenso */
+    text-decoration: line-through;  /* Tachado */
+}
+
+.rechazado td {
+    color: white;  /* Cambia el texto a blanco para hacerlo visible sobre el rojo */
+}

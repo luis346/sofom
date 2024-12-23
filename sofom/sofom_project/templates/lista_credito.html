@@ -1,0 +1,37 @@
+<!-- lista_creditos.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Lista de Créditos</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Monto</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for credito in creditos %}
+            <tr>
+                <td>{{ credito.solicitud.nombre_cliente }}</td>
+                <td>{{ credito.monto }}</td>
+                <td>
+                    <span class="badge {% if credito.estado == 'elaboracion' %}bg-warning{% elif credito.estado == 'evaluacion' %}bg-primary{% elif credito.estado == 'autorizacion' %}bg-success{% elif credito.estado == 'instrumentacion' %}bg-info{% endif %}">
+                        {{ credito.get_estado_display }}
+                    </span>
+                </td>
+                <td>
+                    <a href="{% url 'actualizar_estado_credito' credito.id 'evaluacion' %}" class="btn btn-primary btn-sm" {% if credito.estado != 'elaboracion' %}style="display:none;"{% endif %}>Evaluar</a>
+                    <a href="{% url 'actualizar_estado_credito' credito.id 'autorizacion' %}" class="btn btn-success btn-sm" {% if credito.estado != 'evaluacion' %}style="display:none;"{% endif %}>Autorizar</a>
+                    <a href="{% url 'actualizar_estado_credito' credito.id 'instrumentacion' %}" class="btn btn-info btn-sm" {% if credito.estado != 'autorizacion' %}style="display:none;"{% endif %}>Instrumentar</a>
+                    <a href="{% url 'actualizar_estado_credito' credito.id 'entregado' %}" class="btn btn-dark btn-sm" {% if credito.estado != 'instrumentacion' %}style="display:none;"{% endif %}>Entregar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

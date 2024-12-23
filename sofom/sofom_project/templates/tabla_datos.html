@@ -1,0 +1,78 @@
+<!-- tabla_datos.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2>Lista de Datos</h2>
+    
+    <!-- Botón para descargar el reporte en Excel -->
+    <a href="{% url 'exportar_excel' %}">
+        <button class="btn btn-primary mt-3">Descargar Reporte en Excel</button>
+    </a>
+
+    <form method="GET" class="mb-3">
+        <input type="text" name="query" placeholder="Buscar por nombre o RFC" class="form-control"
+            value="{{ request.GET.query }}">
+        <button type="submit" class="btn btn-primary mt-2">Buscar</button>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Apellido Paterno</th>
+                <th>Apellido Materno</th>
+                <th>Nombre</th>
+                <th>Conyuge</th>
+                <th>Edad</th>
+                <th>RFC</th>
+                <th>Género</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dato in datos %}
+            <tr class="{% if dato.status == 'rechazado' %}table-danger{% elif dato.status == 'prospecto' %}table-warning{% elif dato.status == 'alta' %}table-success{% endif %}">
+                <td>{{ dato.apellido_paterno }}</td>
+                <td>{{ dato.apellido_materno }}</td>
+                <td>{{ dato.nombres }}</td>
+                <td>
+                    {% if dato.conyuge.all %}
+                        <ul>
+                            {% for conyuge in dato.conyuge.all %}
+                                <li>{{ conyuge.nombres }} {{ conyuge.apellido_paterno }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        No tiene conyuge
+                    {% endif %}
+                </td>
+                <td>{{ dato.edad }}</td>
+                <td>{{ dato.rfc }}</td>
+                <td>{{ dato.genero }}</td>
+                <td>
+                    <span class="badge {% if dato.status == 'prospecto' %}bg-warning text-dark{% elif dato.status == 'alta' %}bg-success{% endif %}">
+                        {{ dato.get_estado_display }}
+                    </span>
+                </td>
+                <td>
+                    {% if dato.status != 'rechazado' %}
+                        <a href="{% url 'cambiar_estado_solicitud' dato.id 'alta' %}" class="btn btn-success btn-sm" {% if dato.status == 'alta' %}style="display:none;"{% endif %}>Dar de Alta</a>
+                        <a href="{% url 'cambiar_estado_solicitud' dato.id 'prospecto' %}" class="btn btn-warning btn-sm" {% if dato.status == 'prospecto' %}style="display:none;"{% endif %}>Volver a Prospecto</a>
+                        <form method="POST" action="{% url 'eliminar_solicitud' dato.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este cliente?');">Eliminar</button>
+                        </form>
+                    {% else %}
+                        <span style="color: gray; text-decoration: line-through;">No editable</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

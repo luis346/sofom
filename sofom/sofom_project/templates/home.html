@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<div class="container mt-4">
+    <div class="card text-bg-ligth mb-3" style="max-width: 300rem;">
+        <div class="card-header">DASHBOARD</div>
+        <div class="card-body">
+    <!-- Gráfico de Clientes -->
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Clientes por Estado</h3>
+            <canvas id="clientesEstadoChart"></canvas>
+        </div>
+
+        <!-- Gráfico de Solicitudes -->
+        <div class="col-md-6">
+            <h3>Solicitudes por Día</h3>
+            <canvas id="solicitudesPeriodoChart"></canvas>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Datos enviados desde Django
+        const clientesEstado = JSON.parse('{{ clientes_estado|safe }}'); // Analizar JSON
+        const solicitudesPeriodo = JSON.parse('{{ solicitudes_periodo|safe }}');
+
+        // Procesar datos para Clientes por Estado
+        const estados = clientesEstado.map(e => e.status);
+        const totales = clientesEstado.map(e => e.total);
+
+        // Gráfico de Clientes por Estado
+        new Chart(document.getElementById('clientesEstadoChart'), {
+            type: 'pie',
+            data: {
+                labels: estados,
+                datasets: [{
+                    data: totales,
+                    backgroundColor: ['#4caf50','#ffeb3b','#f44336','#2196f3'],
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                }
+            }
+        });
+
+        // Procesar datos para Solicitudes por Día
+        const dias = solicitudesPeriodo.map(s => s.day);
+        const totalesDias = solicitudesPeriodo.map(s => s.total);
+
+        // Gráfico de Solicitudes por Día
+        new Chart(document.getElementById('solicitudesPeriodoChart'), {
+            type: 'bar',
+            data: {
+                labels: dias,
+                datasets: [{
+                    label: 'Solicitudes',
+                    data: totalesDias,
+                    backgroundColor: '#2196f3',
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                },
+                scales: {
+                    x: { title: { display: true, text: 'Días' } },
+                    y: { title: { display: true, text: 'Solicitudes' } }
+                }
+            }
+        });
+    });
+</script>
+
+
+{% endblock %}

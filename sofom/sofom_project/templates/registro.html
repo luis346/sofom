@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Registro - SOFOM-RESIDENCIA
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <h2>Registrar Usuario</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Registrar</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if messages %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+            icon: "{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% endif %}",
+            title: "{{ message }}",
+            confirmButtonText: 'OK'
+        });  
+    });
+</script>
+{% endif %}
+{% endblock %}

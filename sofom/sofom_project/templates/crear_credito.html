@@ -1,0 +1,773 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="modalCredito" tabindex="-1"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-xl">
+                                        <!-- Modal grande para acomodar el contenido en dos columnas -->
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Simulador de Crédito</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- Estructura de dos columnas -->
+                                                <div class="row">
+                                                    <!-- Columna izquierda para la tabla de amortización -->
+                                                    <div class="col-md-6">
+                                                        <div class="table-responsive mt-4">
+                                                            <table class="table table-striped" id="amortizationTable">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Número de Pago</th>
+                                                                        <th>Fecha pago</th>
+                                                                        <th>IVA intereses</th>
+                                                                        <th>Interés</th>
+                                                                        <th>Comision</th>
+                                                                        <th>Seguro</th>
+                                                                        <th>Pago</th>
+                                                                        <th>Capital</th>
+                                                                        <th>Saldo Restante</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <!-- Los datos se llenarán dinámicamente -->
+                                                                </tbody>
+                                                            </table>
+                                                         
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Columna derecha para el formulario -->
+                                                    <div class="col-md-6">
+                                                        <form id="creditSimulator">
+                                                            <div class="row g-3">
+                                                                <!-- Campos de entrada (sin cambios) -->
+                                                                <div class="col-md-4">
+                                                                    <label for="classification"
+                                                                        class="form-label">Clasificación</label>
+                                                                    <select class="form-select" id="classification"
+                                                                        required>
+                                                                        <option value="CRED PUBLICO EN GENERAL">CRED
+                                                                            PUBLICO
+                                                                            EN GENERAL</option>
+                                                                        <option value="OTRA CLASIFICACION">Otra
+                                                                            Clasificación</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <label for="loanType" class="form-label">Tipo de Préstamo</label>
+                                                                    <select class="form-select" id="loanType" required>
+                                                                        <option value="Tipo 1">PF-CICLO 1 (periodo)
+                                                                        </option>
+                                                                        <option value="Tipo 2">SISU TE ACOMPAÑA
+                                                                            (periodo)</option>
+                                                                        <option value="Tipo 3">SISU TE ACOMPAÑA (Dia)
+                                                                        </option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <label for="currency"
+                                                                        class="form-label">Divisa</label>
+                                                                    <select class="form-select" id="currency" required>
+                                                                        <option value="MXN">MXN</option>
+                                                                        <option value="USD">USD</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <label for="id_paymentPeriod"
+                                                                        class="form-label">Periodo
+                                                                        de Pago</label>
+                                                                    <select class="form-select" id="id_paymentPeriod"
+                                                                        required>
+                                                                        <option value="">Selecciona un período</option>
+                                                                        <!-- Opción predeterminada -->
+                                                                        <option value="QUINCENAL">QUINCENAL</option>
+                                                                        <option value="MENSUAL">MENSUAL</option>
+                                                                        <option value="SEMANAL">SEMANAL</option>
+                                                                    </select>
+
+
+                                                                </select>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <label for="id_loanTerm"
+                                                                        class="form-label">Plazo</label>
+                                                                    <select name="loanTerm" class="form-select"
+                                                                        id="id_loanTerm">
+                                                                        <!-- Las opciones se agregarán dinámicamente -->
+                                                                    </select>
+                                                                </div>
+                                                                <div
+                                                                    style="display: flex; align-items: center; gap: 15px;">
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="radio"
+                                                                            name="flexRadioDefault" id="id_efectiva">
+                                                                        <label class="form-check-label"
+                                                                            for="flexRadioDefault1">
+                                                                            Efectiva
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="radio"
+                                                                            name="flexRadioDefault" id="id_flat">
+                                                                        <label class="form-check-label"
+                                                                            for="flexRadioDefault2">
+                                                                            FLAT
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <label for="fecha_inicial" class="form-label">Fecha
+                                                                        del Primer Pago</label>
+                                                                    <input type="date" class="form-control"
+                                                                        id="fecha_inicial" readonly>
+                                                                </div>
+
+                                                                <div class="col-md-4">
+                                                                    <label for="fecha_final" class="form-label">Fecha
+                                                                        del Último Pago</label>
+                                                                    <input type="date" class="form-control"
+                                                                        id="fecha_final" readonly>
+                                                                </div>
+
+                                                                <div class="col-md-4">
+                                                                    <label for="numberOfPayments"
+                                                                        class="form-label">Número de Pagos</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="numberOfPayments" readonly>
+                                                                </div>
+
+                                                                <div class="col-md-4">
+                                                                    <label for="loanAmount" class="form-label">Monto del
+                                                                        Crédito</label>
+                                                                    <input type="number" class="form-control"
+                                                                        id="loanAmount" required>
+                                                                </div>
+                                                                <div
+                                                                    style="display: flex; align-items: center; gap: 15px;">
+                                                                    <div>
+                                                                        <input type="checkbox" id="tipoRango"
+                                                                            value="rango" checked>
+                                                                        <label for="tipoRango">Seguro por Rango</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="radio"
+                                                                            name="insuranceType"
+                                                                            id="insurance_individual"
+                                                                            value="individual">
+                                                                        <label class="form-check-label"
+                                                                            for="insurance_individual">Individual</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="radio"
+                                                                            name="insuranceType" id="insurance_familiar"
+                                                                            value="familiar">
+                                                                        <label class="form-check-label"
+                                                                            for="insurance_familiar">Familiar</label>
+                                                                    </div>
+
+                                                                </div>
+
+                                                                <div class="col-md-2">
+                                                                    <label for="interestRate" class="form-label">Tasa
+                                                                        (%)</label>
+                                                                    <input type="number" class="form-control"
+                                                                        id="interestRate" required
+                                                                        oninput="updateRates()">
+                                                                </div>
+                                                                <!-- Campo para la Tasa de Interés Mínima -->
+                                                                <div class="col-md-3">
+                                                                    <label for="minInterestRate" class="form-label">Mín
+                                                                        (%)</label>
+                                                                    <input type="number" class="form-control"
+                                                                        id="minInterestRate" required min="0"
+                                                                        step="0.01" readonly>
+                                                                    <small class="form-text text-muted">(por ejemplo,
+                                                                        5.00).</small>
+                                                                </div>
+
+                                                                <!-- Campo para la Tasa de Interés Máxima -->
+                                                                <div class="col-md-3">
+                                                                    <label for="maxInterestRate" class="form-label">Máx
+                                                                        (%)</label>
+                                                                    <input type="number" class="form-control"
+                                                                        id="maxInterestRate" required min="0"
+                                                                        step="0.01" readonly>
+                                                                    <small class="form-text text-muted">(por ejemplo,
+                                                                        15.00).</small>
+                                                                </div>
+
+                                                                <!-- IVA Intereses -->
+                                                                <div class="col-md-3">
+                                                                    <label for="IVAInterest" class="form-label">IVA
+                                                                        Interés (%)</label>
+                                                                    <input type="number" class="form-control"
+                                                                        id="IVAInterest" value="16.00" readonly>
+                                                                </div>
+                                                                <div class="row align-items-center mb-3">
+
+                                                                    <!-- Input para el porcentaje -->
+                                                                    <div class="col-md-3">
+                                                                        <input type="number" class="form-control"
+                                                                            id="percentage" required min="0" step="0.01"
+                                                                            value="0.00">
+                                                                    </div>
+
+                                                                   <!-- Label de Comisión -->
+                                                                    <div class="col-md-2">
+                                                                        <label for="commission" class="form-label">Comisión:</label>
+                                                                    </div>
+                                                                    <!-- Input de Comisión -->
+                                                                    <div class="col-md-3">
+                                                                        <input type="number" class="form-control"
+                                                                            id="commission" required min="0" step="0.01"
+                                                                            value="0.00">
+                                                                    </div>
+
+                                                                    <!-- Radios en lista -->
+                                                                    <div class="col-md-4">
+                                                                        <!-- Asegúrate de que el ancho de la columna sea suficiente para los radios -->
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="radio"
+                                                                                name="commissionOption"
+                                                                                id="commission_individual">
+                                                                            <label class="form-check-label"
+                                                                                for="commission_individual"
+                                                                                style="white-space: nowrap;">
+                                                                                Se descuenta
+                                                                            </label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="radio"
+                                                                                name="commissionOption"
+                                                                                id="commission_cobra_aparte">
+                                                                            <label class="form-check-label"
+                                                                                for="commission_cobra_aparte"
+                                                                                style="white-space: nowrap;">
+                                                                                Se cobra aparte
+                                                                            </label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="radio"
+                                                                                name="commissionOption"
+                                                                                id="commission_financea">
+                                                                            <label class="form-check-label"
+                                                                                for="commission_financea"
+                                                                                style="white-space: nowrap;">
+                                                                                Se financea
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row align-items-center mb-3">
+
+                                                                    <!-- Input para pesos -->
+                                                                    <div class="col-md-3">
+                                                                        <input type="number" class="form-control"
+                                                                            id="insurance_pesos" required min="0"
+                                                                            step="0.01" value="0.00">
+                                                                    </div>
+
+                                                                    <!-- Label de seguro -->
+                                                                    <div class="col-md-2">
+                                                                        <label for="insurance"
+                                                                            class="form-label">Seguro:</label>
+                                                                    </div>
+
+                                                                    <!-- Input de seguro -->
+                                                                    <div class="col-md-3">
+                                                                        <input type="number" class="form-control"
+                                                                            id="insurance" required min="0" step="0.01"
+                                                                            value="0.00">
+                                                                    </div>
+
+                                                                    <!-- Radios en lista -->
+                                                                    <div class="col-md-4">
+                                                                        <!-- Asegúrate de que el ancho de la columna sea suficiente para los radios -->
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="radio"
+                                                                                name="insuranceOption"
+                                                                                id="insurance_des">
+                                                                            <label class="form-check-label"
+                                                                                for="insurance_des"
+                                                                                style="white-space: nowrap;">
+                                                                                Se descuenta
+                                                                            </label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="radio"
+                                                                                name="insuranceOption"
+                                                                                id="insurance_cobra_aparte">
+                                                                            <label class="form-check-label"
+                                                                                for="insurance_cobra_aparte"
+                                                                                style="white-space: nowrap;">
+                                                                                Se Amortiza
+                                                                            </label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="radio"
+                                                                                name="insuranceOption"
+                                                                                id="insurance_financea">
+                                                                            <label class="form-check-label"
+                                                                                for="insurance_financea"
+                                                                                style="white-space: nowrap;">
+                                                                                Se financea
+                                                                            </label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-md-4">
+                                                                    <label for="monthlyPayment" class="form-label">Pago
+                                                                        Mensual Estimado</label>
+                                                                    <input type="text" class="form-control"
+                                                                        id="monthlyPayment" readonly>
+                                                                </div>
+                                                                <div class="resultados">
+                                                                    <h3>Resultados del Cálculo</h3>
+                                                                    <div>
+                                                                        <label for="totalLoan" class="form-label">Monto
+                                                                            por
+                                                                            Préstamo:</label>
+                                                                        <input type="text" id="totalLoan" readonly>
+                                                                    </div>
+                                                                    <div>
+                                                                        <label for="capital"
+                                                                            class="form-label">Capital:</label>
+                                                                        <input type="text" id="capital" readonly>
+                                                                    </div>
+                                                                    <div>
+                                                                        <label for="interest" class="form-label">Interés
+                                                                            Ordinario:</label>
+                                                                        <input type="text" id="interest" readonly>
+                                                                    </div>
+                                                                    <div>
+                                                                        <label for="ivaInterest" class="form-label">IVA
+                                                                            del Interés
+                                                                            Ordinario:</label>
+                                                                        <input type="text" id="ivaInterest" readonly>
+                                                                    </div>
+                                                                    <div>
+                                                                        <label for="totalPayable"
+                                                                            class="form-label">Total a Pagar:</label>
+                                                                        <input type="text" id="totalPayable" readonly>
+                                                                    </div>
+                                                                    <div>
+                                                                        <label for="cat" class="form-label">CAT:</label>
+                                                                        <input type="text" id="cat" readonly>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <input type="hidden" id="solicitud_id_credito" name="solicitud_id_credito" value="">
+                                                        </form>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Cerrar</button>
+                                                <button type="button" class="btn btn-primary"
+                                                    onclick="calculatePayment()">Calcular</button>
+                                                <button onclick="generatePDF()" type="button"
+                                                    class="btn btn-success">Generar PDF</button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+<div class="modal fade" id="modalPLD" tabindex="-1" aria-labelledby="modalPLDLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Encabezado del Modal -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPLDLabel">Validación PLD</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <!-- Cuerpo del Modal -->
+            <div class="modal-body">
+                <form id="formularioPLD">
+                    <!-- Datos del Cliente -->
+                    <h6>Datos del Cliente</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_pld-nombres" class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-control" id="id_pld-nombres" name="nombres" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_pld-rfc" class="form-label">RFC</label>
+                            <input type="text" class="form-control" id="id_pld-rfc" name="rfc" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_pld-curp" class="form-label">CURP</label>
+                            <input type="text" class="form-control" id="id_pld-curp" name="curp" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_pld-fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
+                            <input type="date" class="form-control" id="id_pld-fecha_nacimiento" name="fecha_nacimiento" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_pld-pais_nacimiento" class="form-label">País de Nacimiento</label>
+                            <input type="text" class="form-control" id="id_pld-pais_nacimiento" name="pais_nacimiento" readonly>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Subir Documentos -->
+                    <h6>Documentos Requeridos</h6>
+                    <div class="mb-3">
+                        <label for="comprobante_domicilio" class="form-label">Comprobante de Domicilio</label>
+                        <input type="file" class="form-control" id="comprobante_domicilio" name="comprobante_domicilio" accept=".pdf,.jpg,.jpeg,.png" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ine" class="form-label">INE</label>
+                        <input type="file" class="form-control" id="ine" name="ine" accept=".pdf,.jpg,.jpeg,.png" required>
+                    </div>
+                    <input type="hidden" id="solicitud_id_pld" name="solicitud_id_pld" value="">
+                </form>
+            </div>
+
+            <!-- Pie del Modal -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="validarPLD">Validar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container mt-5">
+    <h2>Otorgación de Crédito</h2>
+    <div class="row">
+        <!-- Columna izquierda para el formulario -->
+        <div class="col-md-3">
+            <form method="POST">
+                {% csrf_token %}
+                <div>
+                    <div class="col-md-8">
+                        <label for="clientes-alta" class="form-label">Acciones</label>
+                        <select class="form-select" id="clientes-alta" required>
+                                <option value="">Seleccionar estado</option>
+                                <option value="alta">Alta</option>
+                                <option value="validacion">Validación</option>
+                                <option value="aprobado">Crédito autorizado</option>
+                            </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- Columna derecha para la tabla -->
+        <div class="col-md-9">
+            <div class="table-responsive mt-4">
+                <table class="table" id="clientesTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Apellido Paterno</th>
+                            <th>Apellido Materno</th>
+                            <th>Nombres</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Tabla dinámica se llenará desde el script -->
+                    </tbody>
+                </table>
+                <button onclick="generatePDF()" type="button" class="btn btn-success">Generar PDF</button>
+
+            </div>
+        </div>
+
+<!-- Modal Principal -->
+<div class="modal fade" id="miModal"  data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="miModalLabel">Actualizar Solicitud</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="formSolicitud">
+                    {% csrf_token %}
+                    <input type="hidden" name="solicitud_id" value="{{ solicitud.id|default:'' }}">
+                    <!-- Aquí se copian los campos del formulario original -->
+
+
+                    <!-- Pestañas de navegación -->
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" id="tab-personales-tab" data-bs-toggle="tab"
+                                data-bs-target="#tab-personales" type="button" role="tab" aria-controls="tab-personales"
+                                aria-selected="true">Datos personales</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="tab-conyuge-tab" data-bs-toggle="tab" data-bs-target="#tab-conyuge"
+                                type="button" role="tab" aria-controls="tab-conyuge" aria-selected="false">Datos del
+                                cónyuge</a>
+                        </li>
+                    </ul>
+                    <!-- Contenido de cada pestaña -->
+                    <div class="tab-content" id="myTabContent">
+                        <!-- Pestaña de Datos Personales -->
+                        <div class="tab-pane fade show active" id="tab-personales" role="tabpanel"
+                            aria-labelledby="tab-personales-tab">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label for="{{ form.apellido_paterno.id_for_label }}" class="form-label">Apellido
+                                        Paterno</label>
+                                    {{ form.apellido_paterno }}
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="{{ form.apellido_materno.id_for_label }}" class="form-label">Apellido
+                                        Materno</label>
+                                    {{ form.apellido_materno }}
+                                </div>
+
+                                <div class="col-3">
+                                    <label for="{{ form.nombres.id_for_label }}" class="form-label">Nombre</label>
+                                    {{ form.nombres }}
+                                </div>
+
+                                <!-- Otros campos como fecha de nacimiento, edad, RFC, etc. -->
+                                <div class="col-3">
+                                    <label for="{{ form.fecha_nacimiento.id_for_label }}" class="form-label">Fecha
+                                        de
+                                        Nacimiento</label>
+                                    {{ form.fecha_nacimiento }}
+                                </div>
+
+                                <div class="col-1">
+                                    <label for="{{ form.edad.id_for_label }}" class="form-label">Edad</label>
+                                    {{ form.edad }}
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="{{ form.rfc.id_for_label }}" class="form-label">RFC</label>
+                                    {{ form.rfc }}
+                                </div>
+
+                                <!-- Campos de selección como Género y Estado Civil -->
+                                <div class="col-md-2">
+                                    <label for="{{ form.genero.id_for_label }}" class="form-label">Género</label>
+                                    {{ form.genero }}
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label for="{{ form.estado_civil.id_for_label }}" class="form-label">Estado
+                                        Civil</label>
+                                    {{ form.estado_civil }}
+                                </div>
+
+                                <!-- Campo CURP -->
+                                <div class="col-md-4">
+                                    <label for="{{ form.curp.id_for_label }}" class="form-label">CURP</label>
+                                    {{ form.curp }}
+                                </div>
+
+                                <!-- Campo Email -->
+                                <div class="col-1">
+                                    <label for="{{ form.dependientes.id_for_label }}"
+                                        class="form-label">Dependientes</label>
+                                    {{ form.dependientes }}
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label for="{{ form.tipo_id_oficial.id_for_label }}" class="form-label">Tipo de
+                                        ID.
+                                        Oficial</label>
+                                    {{ form.tipo_id_oficial }}
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label for="{{ form.clave_id_oficial.id_for_label }}" class="form-label">Clave
+                                        ID.
+                                        Oficial</label>
+                                    {{ form.clave_id_oficial }}
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label for="{{ form.nacionalidad.id_for_label }}"
+                                        class="form-label">Nacionalidad</label>
+                                    {{ form.nacionalidad }}
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label for="{{ form.pais_nacimiento.id_for_label }}" class="form-label">Pais de
+                                        Nacimiento</label>
+                                    {{ form.pais_nacimiento }}
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="{{ form.entidad_federativa_nacimiento.id_for_label }}"
+                                        class="form-label">Entidad Federativa</label>
+                                    {{ form.entidad_federativa_nacimiento }}
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="{{ form.proveedor_recursos.id_for_label }}" class="form-label">Proveedor
+                                        Recursos</label>
+                                    {{ form.proveedor_recursos}}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="{{ form.imss.id_for_label }}" class="form-label">IMSS</label>
+                                    {{ form.imss }}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="{{ form.mercado.id_for_label }}" class="form-label">Mercado</label>
+                                    {{ form.mercado }}
+                                </div>
+
+                                <h4 class="mb-3">Domicilio Particular</h4>
+
+                                <div class="col-md-3">
+                                    <label for="{{ form.calle.id_for_label }}" class="form-label">Calle</label>
+                                    {{ form.calle }}
+                                </div>
+
+                                <div class="col-1">
+                                    <label for="{{ form.no_exterior.id_for_label }}" class="form-label">No.
+                                        Exterior</label>
+                                    {{ form.no_exterior }}
+                                </div>
+
+                                <div class="col-1">
+                                    <label for="{{ form.no_interior.id_for_label }}" class="form-label">No.
+                                        Interior</label>
+                                    {{ form.no_interior}}
+                                </div>
+
+
+                                <div class="col-md-3">
+                                    <label for="{{ form.codigo_postal.id_for_label }}" class="form-label">Código
+                                        Postal</label>
+                                    {{ form.codigo_postal }}
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="{{ form.estado.id_for_label }}" class="form-label">Estado</label>
+                                    {{ form.estado}}
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="{{ form.municipio.id_for_label }}" class="form-label">Delegacion o
+                                        Municipio</label>
+                                    {{ form.municipio }}
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="id_solicitud-colonia" class="form-label">Colonia</label>
+                                    <select id="id_solicitud-colonia" name="solicitud-colonia" class="form-control">
+                                        <option value="">Selecciona una colonia</option>
+                                        {% for colonia in colonias %}
+                                        <option>
+                                            {{ colonia }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label for="{{ form.entre_calles.id_for_label }}" class="form-label">Entre
+                                        calles</label>
+                                    {{ form.entre_calles }}
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label for="{{ form.tipo_vivienda.id_for_label }}" class="form-label">Tipo de
+                                        vivienda</label>
+                                    {{ form.tipo_vivienda }}
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label for="{{ form.anios_residencia.id_for_label }}" class="form-label">Años de
+                                        residencia</label>
+                                    {{ form.anios_residencia }}
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label for="{{ form.telefono_fijo.id_for_label }}" class="form-label">Telefono
+                                        fijo</label>
+                                    {{ form.telefono_fijo }}
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label for="{{ form.celular.id_for_label }}" class="form-label">Celular</label>
+                                    {{ form.celular }}
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label for="{{ form.telefono_avisos.id_for_label }}" class="form-label">Telefono
+                                        de
+                                        avisos</label>
+                                    {{ form.telefono_avisos }}
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label">E-mail</label>
+                                    {{ form.email }}
+                                </div> <!-- Otros campos del formulario de cliente -->
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <!-- Agrega más campos aquí según tu modelo -->
+                            <button type="submit" class="btn btn-primary">Actualizar</button>
+
+                        </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="application/json" id="clientesData">
+    {{ clientes_alta|default:"[]"|safe }}
+</script>
+
+<script type="application/json" id="clientesDataValidacion">
+    {{ clientes_validacion|safe }}
+</script>
+
+<script type="application/json" id="clientesDataAutorizado">
+    {{ clientes_credito|safe }}
+</script>
+
+
+<script type="text/javascript">
+    const clientesAlta = JSON.parse(document.getElementById('clientesData').textContent);
+    console.log('Clientes Alta:', clientesAlta); // Verificar que los datos se cargan correctamente
+
+    const clientesValidacion = JSON.parse(document.getElementById('clientesDataValidacion').textContent);
+    console.log('Clientes Validacion:', clientesValidacion); // Verificar que los datos se cargan correctamente
+
+    const cerditoAutorizado = JSON.parse(document.getElementById('clientesDataAutorizado').textContent);
+    console.log('Clientes Autorizados:', cerditoAutorizado); // Verificar que los datos se cargan correctamente
+</script>
+
+<!-- Carga jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Carga Popper.js y Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+
+
+<!-- Funciones Script -->
+<script src="{% static 'js/funciones.js' %}"></script>
+<script src="{% static 'js/datos.js' %}"></script>
+<script src="{% static 'js/funciones_credito.js' %}"></script>
+<!-- URL para obtener datos de código postal -->
+<script>const obtenerDatosCpUrl = "{% url 'obtener_datos_cp' %}";</script>
+{% endblock %}

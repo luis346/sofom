@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+Login - SOFOM-RESIDENCIA
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Enlaces a fuentes y estilos -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <div class="background">
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <form method="POST">
+        <h2 class="text-align">Inicio de sesión</h2>
+        {% csrf_token %}
+        <label for="id_username">Usuario</label>
+        <input type="text" name="username" maxlength="15" required id="id_username">
+
+        <label for="id_password">Contraseña</label>
+        <input type="password" name="password" maxlength="15" required id="id_password">
+        
+        <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Script para mostrar alertas con SweetAlert2 -->
+{% if messages %}
+    {% for message in messages %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                icon: "{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% else %}info{% endif %}",
+                title: "{{ message|escapejs }}",
+                confirmButtonText: 'OK'
+            });
+        });
+    </script>
+    {% endfor %}
+{% endif %}
+{% endblock %}
